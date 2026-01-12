@@ -1,11 +1,18 @@
 "use client";
 
+import { useRef, useState } from "react";
 import { useMockupStore } from "@/store/mockup-store";
 import { WhatsAppChat } from "@/components/mockups/chat/WhatsAppChat";
+import { iMessageChat as IMessageChat } from "@/components/mockups/chat/iMessageChat";
+import { DiscordChat } from "@/components/mockups/chat/DiscordChat";
+import { SlackChat } from "@/components/mockups/chat/SlackChat";
 import { ChatGPTMockup } from "@/components/mockups/ai-chat/ChatGPTMockup";
+import { ClaudeMockup } from "@/components/mockups/ai-chat/ClaudeMockup";
 import { InstagramPost } from "@/components/mockups/social/InstagramPost";
+import { XPost } from "@/components/mockups/social/XPost";
 import { AIGenerator } from "@/components/controls/AIGenerator";
 import { cn } from "@/lib/utils";
+import { toPng } from "html-to-image";
 
 const tabs = [
   { id: "chat", label: "Chat", icon: "💬" },
@@ -43,7 +50,70 @@ export default function Home() {
     setTheme,
   } = useMockupStore();
 
+  const mockupRef = useRef<HTMLDivElement>(null);
+  const [exporting, setExporting] = useState(false);
+
   const currentTheme = chatMockup.theme;
+
+  const handleExport = async () => {
+    if (!mockupRef.current) return;
+
+    setExporting(true);
+    try {
+      const dataUrl = await toPng(mockupRef.current, {
+        quality: 1,
+        pixelRatio: 2,
+        backgroundColor: "transparent",
+      });
+
+      // Download the image
+      const link = document.createElement("a");
+      link.download = `fakely-mockup-${Date.now()}.png`;
+      link.href = dataUrl;
+      link.click();
+    } catch (error) {
+      console.error("Export failed:", error);
+    } finally {
+      setExporting(false);
+    }
+  };
+
+  const renderChatMockup = () => {
+    switch (chatMockup.platform) {
+      case "whatsapp":
+        return <WhatsAppChat mockup={chatMockup} />;
+      case "imessage":
+        return <IMessageChat mockup={chatMockup} />;
+      case "discord":
+        return <DiscordChat mockup={chatMockup} />;
+      case "slack":
+        return <SlackChat mockup={chatMockup} />;
+      default:
+        return <WhatsAppChat mockup={chatMockup} />;
+    }
+  };
+
+  const renderAIChatMockup = () => {
+    switch (aiChatMockup.platform) {
+      case "chatgpt":
+        return <ChatGPTMockup mockup={aiChatMockup} />;
+      case "claude":
+        return <ClaudeMockup mockup={aiChatMockup} />;
+      default:
+        return <ChatGPTMockup mockup={aiChatMockup} />;
+    }
+  };
+
+  const renderSocialMockup = () => {
+    switch (socialPost.platform) {
+      case "instagram":
+        return <InstagramPost post={socialPost} />;
+      case "x":
+        return <XPost post={socialPost} />;
+      default:
+        return <InstagramPost post={socialPost} />;
+    }
+  };
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900">
@@ -217,17 +287,48 @@ export default function Home() {
             <AIGenerator type={activeTab} />
 
             {/* Export Button */}
-            <button className="w-full py-4 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold hover:from-purple-700 hover:to-pink-700 transition-all shadow-lg shadow-purple-500/25">
-              📥 PNG Olarak İndir
+            <button
+              onClick={handleExport}
+              disabled={exporting}
+              className={cn(
+                "w-full py-4 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold hover:from-purple-700 hover:to-pink-700 transition-all shadow-lg shadow-purple-500/25 flex items-center justify-center gap-2",
+                exporting && "opacity-50 cursor-not-allowed"
+              )}
+            >
+              {exporting ? (
+                <>
+                  <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                      fill="none"
+                    />
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    />
+                  </svg>
+                  Dışa Aktarılıyor...
+                </>
+              ) : (
+                <>📥 PNG Olarak İndir</>
+              )}
             </button>
           </aside>
 
           {/* Main Content - Preview */}
           <main className="lg:col-span-9">
-            <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-8 border border-white/10 min-h-[700px] flex items-center justify-center">
-              {activeTab === "chat" && <WhatsAppChat mockup={chatMockup} />}
-              {activeTab === "ai-chat" && <ChatGPTMockup mockup={aiChatMockup} />}
-              {activeTab === "social" && <InstagramPost post={socialPost} />}
+            <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-8 border border-white/10 min-h-[700px] flex items-center justify-center overflow-auto">
+              <div ref={mockupRef}>
+                {activeTab === "chat" && renderChatMockup()}
+                {activeTab === "ai-chat" && renderAIChatMockup()}
+                {activeTab === "social" && renderSocialMockup()}
+              </div>
             </div>
           </main>
         </div>
