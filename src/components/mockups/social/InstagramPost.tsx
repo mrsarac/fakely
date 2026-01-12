@@ -21,11 +21,11 @@ export function InstagramPost({ post }: InstagramPostProps) {
     const now = new Date();
     const diff = now.getTime() - timestamp.getTime();
     const hours = Math.floor(diff / (1000 * 60 * 60));
-    if (hours < 1) return "Az önce";
-    if (hours < 24) return `${hours} saat önce`;
+    if (hours < 1) return "Just now";
+    if (hours < 24) return `${hours}h ago`;
     const days = Math.floor(hours / 24);
-    if (days < 7) return `${days} gün önce`;
-    return timestamp.toLocaleDateString("tr-TR");
+    if (days < 7) return `${days}d ago`;
+    return timestamp.toLocaleDateString("en-US");
   };
 
   return (
@@ -114,7 +114,7 @@ export function InstagramPost({ post }: InstagramPostProps) {
 
         {/* Likes */}
         <p className={cn("font-semibold text-sm", isDark ? "text-white" : "text-gray-900")}>
-          {formatNumber(likes)} beğenme
+          {formatNumber(likes)} likes
         </p>
 
         {/* Caption */}
@@ -125,7 +125,7 @@ export function InstagramPost({ post }: InstagramPostProps) {
 
         {/* Comments */}
         <button className={cn("text-sm", isDark ? "text-gray-400" : "text-gray-500")}>
-          {comments} yorumun tümünü gör
+          View all {comments} comments
         </button>
 
         {/* Time */}

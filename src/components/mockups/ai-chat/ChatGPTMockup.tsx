@@ -102,7 +102,7 @@ export function ChatGPTMockup({ mockup }: ChatGPTMockupProps) {
           >
             <input
               type="text"
-              placeholder="ChatGPT'ye mesaj gönderin"
+              placeholder="Message ChatGPT..."
               className={cn(
                 "flex-1 bg-transparent outline-none text-sm",
                 isDark ? "text-white placeholder:text-gray-500" : "text-gray-900 placeholder:text-gray-400"

@@ -11,15 +11,15 @@ import type {
 import { generateId } from "@/lib/utils";
 
 const defaultParticipants = [
-  { id: "me", name: "Ben", avatar: null, isMe: true },
-  { id: "other", name: "Ali", avatar: null },
+  { id: "me", name: "Me", avatar: null, isMe: true },
+  { id: "other", name: "Alex", avatar: null },
 ];
 
 const defaultMessages: Message[] = [
   {
     id: generateId(),
     senderId: "other",
-    content: "Selam, nasılsın?",
+    content: "Hey, how are you?",
     timestamp: new Date(Date.now() - 60000),
     type: "text",
     status: "read",
@@ -27,7 +27,7 @@ const defaultMessages: Message[] = [
   {
     id: generateId(),
     senderId: "me",
-    content: "İyiyim, sen?",
+    content: "I'm good, thanks! You?",
     timestamp: new Date(),
     type: "text",
     status: "delivered",
@@ -38,12 +38,12 @@ const defaultAIMessages: AIMessage[] = [
   {
     id: generateId(),
     role: "user",
-    content: "Merhaba, bana yardımcı olabilir misin?",
+    content: "Hello, can you help me with something?",
   },
   {
     id: generateId(),
     role: "assistant",
-    content: "Tabii ki! Size nasıl yardımcı olabilirim?",
+    content: "Of course! I'd be happy to help. What do you need?",
   },
 ];
 
@@ -56,7 +56,7 @@ const defaultSocialPost: SocialPost = {
     verified: true,
   },
   content:
-    "Fake chat ve social post mockup'ları oluşturmak hiç bu kadar kolay olmamıştı! 🎭\n\n#fakely #mockup #design",
+    "Creating fake chat and social post mockups has never been easier! 🎭\n\n#fakely #mockup #design",
   likes: 1234,
   comments: 56,
   shares: 78,

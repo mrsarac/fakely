@@ -61,8 +61,8 @@ export function WhatsAppChat({ mockup }: WhatsAppChatProps) {
           {otherParticipant?.name?.charAt(0) || "?"}
         </div>
         <div className="flex-1">
-          <p className="text-white font-medium">{otherParticipant?.name || "Kişi"}</p>
-          <p className="text-white/70 text-xs">çevrimiçi</p>
+          <p className="text-white font-medium">{otherParticipant?.name || "Contact"}</p>
+          <p className="text-white/70 text-xs">online</p>
         </div>
         <div className="flex items-center gap-4 text-white">
           <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -169,7 +169,7 @@ export function WhatsAppChat({ mockup }: WhatsAppChatProps) {
           )}
         >
           <span className={isDark ? "text-gray-400" : "text-gray-500"}>
-            Mesaj yazın
+            Type a message
           </span>
         </div>
         <button className="w-10 h-10 rounded-full bg-[#00a884] flex items-center justify-center text-white">
