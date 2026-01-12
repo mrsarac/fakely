@@ -12,12 +12,12 @@ services:
       - coolify
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.fakely.rule=Host(`fakely.neurabytelabs.com`)"
+      - "traefik.http.routers.fakely.rule=Host(`fakely.mustafasarac.com`)"
       - "traefik.http.routers.fakely.entrypoints=https"
       - "traefik.http.routers.fakely.tls=true"
       - "traefik.http.routers.fakely.tls.certresolver=letsencrypt"
       - "traefik.http.services.fakely.loadbalancer.server.port=3000"
-      - "traefik.http.routers.fakely-http.rule=Host(`fakely.neurabytelabs.com`)"
+      - "traefik.http.routers.fakely-http.rule=Host(`fakely.mustafasarac.com`)"
       - "traefik.http.routers.fakely-http.entrypoints=http"
       - "traefik.http.routers.fakely-http.middlewares=redirect-to-https"
 
