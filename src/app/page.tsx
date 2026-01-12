@@ -4,6 +4,7 @@ import { useMockupStore } from "@/store/mockup-store";
 import { WhatsAppChat } from "@/components/mockups/chat/WhatsAppChat";
 import { ChatGPTMockup } from "@/components/mockups/ai-chat/ChatGPTMockup";
 import { InstagramPost } from "@/components/mockups/social/InstagramPost";
+import { AIGenerator } from "@/components/controls/AIGenerator";
 import { cn } from "@/lib/utils";
 
 const tabs = [
@@ -211,6 +212,9 @@ export default function Home() {
                 </button>
               </div>
             </div>
+
+            {/* AI Generator */}
+            <AIGenerator type={activeTab} />
 
             {/* Export Button */}
             <button className="w-full py-4 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold hover:from-purple-700 hover:to-pink-700 transition-all shadow-lg shadow-purple-500/25">
