@@ -4,24 +4,39 @@ import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { useMockupStore } from "@/store/mockup-store";
 import { generateId } from "@/lib/utils";
+import { Button } from "@/components/ui/Button";
+import { Textarea } from "@/components/ui/Textarea";
+import { Select } from "@/components/ui/Select";
 
 interface AIGeneratorProps {
   type: "chat" | "ai-chat" | "social";
 }
+
+const toneOptions = [
+  { value: "casual", label: "Casual" },
+  { value: "professional", label: "Professional" },
+  { value: "funny", label: "Funny" },
+  { value: "romantic", label: "Romantic" },
+];
+
+const languageOptions = [
+  { value: "en", label: "English" },
+  { value: "tr", label: "Turkish" },
+];
 
 export function AIGenerator({ type }: AIGeneratorProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [context, setContext] = useState("");
   const [tone, setTone] = useState<"casual" | "professional" | "funny" | "romantic">("casual");
-  const [language, setLanguage] = useState<"tr" | "en">("tr");
+  const [language, setLanguage] = useState<"tr" | "en">("en");
 
   const { chatMockup, aiChatMockup, socialPost, addMessage, addAIMessage, updateSocialPost } =
     useMockupStore();
 
   const handleGenerate = async () => {
     if (!context.trim()) {
-      setError("Lütfen bir konu/bağlam girin");
+      setError("Please enter a topic or context");
       return;
     }
 
@@ -101,150 +116,79 @@ export function AIGenerator({ type }: AIGeneratorProps) {
 
       setContext("");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Bir hata oluştu");
+      setError(err instanceof Error ? err.message : "An error occurred");
     } finally {
       setLoading(false);
     }
   };
 
+  const getPlaceholder = () => {
+    if (type === "chat") return "E.g., Two friends planning a weekend trip";
+    if (type === "ai-chat") return "E.g., How do I sort a list in Python?";
+    return "E.g., New product launch announcement";
+  };
+
+  const getLabel = () => {
+    if (type === "chat") return "Chat Topic";
+    if (type === "ai-chat") return "Your Message";
+    return "Post Topic";
+  };
+
   return (
-    <div className="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10">
-      <h3 className="text-sm font-medium text-gray-400 mb-3 flex items-center gap-2">
-        <span>✨</span> AI İçerik Üret
-      </h3>
-
-      <div className="space-y-3">
-        {/* Context Input */}
-        <div>
-          <label className="text-xs text-gray-500 mb-1 block">
-            {type === "chat"
-              ? "Sohbet konusu"
-              : type === "ai-chat"
-              ? "Mesajınız"
-              : "Post konusu"}
-          </label>
-          <textarea
-            value={context}
-            onChange={(e) => setContext(e.target.value)}
-            placeholder={
-              type === "chat"
-                ? "Örn: İki arkadaş hafta sonu planı yapıyor"
-                : type === "ai-chat"
-                ? "Örn: Python'da liste nasıl sıralanır?"
-                : "Örn: Yeni ürün lansmanı duyurusu"
-            }
-            className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-white text-sm placeholder:text-gray-500 resize-none focus:outline-none focus:ring-2 focus:ring-purple-500"
-            rows={2}
-          />
+    <div className="space-y-4">
+      {/* Header with neo-brutalism accent */}
+      <div className="flex items-center gap-2">
+        <div className="w-6 h-6 bg-black shadow-brutal rounded-[4px] flex items-center justify-center">
+          <span className="text-white text-[12px]">AI</span>
         </div>
-
-        {/* Tone Selector (for chat and social) */}
-        {type !== "ai-chat" && (
-          <div>
-            <label className="text-xs text-gray-500 mb-1 block">Ton</label>
-            <div className="grid grid-cols-2 gap-2">
-              {(["casual", "professional", "funny", "romantic"] as const).map((t) => (
-                <button
-                  key={t}
-                  onClick={() => setTone(t)}
-                  className={cn(
-                    "px-3 py-1.5 rounded-lg text-xs font-medium transition-all",
-                    tone === t
-                      ? "bg-purple-600 text-white"
-                      : "bg-white/5 text-gray-400 hover:bg-white/10"
-                  )}
-                >
-                  {t === "casual" && "😊 Günlük"}
-                  {t === "professional" && "💼 Profesyonel"}
-                  {t === "funny" && "😄 Komik"}
-                  {t === "romantic" && "❤️ Romantik"}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Language Selector */}
-        {type !== "ai-chat" && (
-          <div>
-            <label className="text-xs text-gray-500 mb-1 block">Dil</label>
-            <div className="flex gap-2">
-              <button
-                onClick={() => setLanguage("tr")}
-                className={cn(
-                  "flex-1 px-3 py-1.5 rounded-lg text-xs font-medium transition-all",
-                  language === "tr"
-                    ? "bg-purple-600 text-white"
-                    : "bg-white/5 text-gray-400 hover:bg-white/10"
-                )}
-              >
-                🇹🇷 Türkçe
-              </button>
-              <button
-                onClick={() => setLanguage("en")}
-                className={cn(
-                  "flex-1 px-3 py-1.5 rounded-lg text-xs font-medium transition-all",
-                  language === "en"
-                    ? "bg-purple-600 text-white"
-                    : "bg-white/5 text-gray-400 hover:bg-white/10"
-                )}
-              >
-                🇬🇧 English
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* Error Message */}
-        {error && (
-          <p className="text-xs text-red-400 bg-red-400/10 px-3 py-2 rounded-lg">
-            {error}
-          </p>
-        )}
-
-        {/* Generate Button */}
-        <button
-          onClick={handleGenerate}
-          disabled={loading}
-          className={cn(
-            "w-full py-3 rounded-lg font-medium transition-all flex items-center justify-center gap-2",
-            loading
-              ? "bg-gray-600 text-gray-400 cursor-not-allowed"
-              : "bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:from-purple-700 hover:to-pink-700"
-          )}
-        >
-          {loading ? (
-            <>
-              <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                  fill="none"
-                />
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                />
-              </svg>
-              Üretiliyor...
-            </>
-          ) : (
-            <>
-              <span>✨</span>
-              AI ile Üret
-            </>
-          )}
-        </button>
-
-        <p className="text-[10px] text-gray-600 text-center">
-          5 istek/dakika limit • Gemini 2.0 Flash
-        </p>
+        <span className="text-[13px] font-semibold text-[#1A1A1A]">Content Generator</span>
       </div>
+
+      {/* Context Input */}
+      <Textarea
+        label={getLabel()}
+        value={context}
+        onChange={(e) => setContext(e.target.value)}
+        placeholder={getPlaceholder()}
+        rows={3}
+        error={error || undefined}
+      />
+
+      {/* Tone Selector (for chat and social) */}
+      {type !== "ai-chat" && (
+        <Select
+          label="Tone"
+          options={toneOptions}
+          value={tone}
+          onChange={(value) => setTone(value as "casual" | "professional" | "funny" | "romantic")}
+        />
+      )}
+
+      {/* Language Selector */}
+      {type !== "ai-chat" && (
+        <Select
+          label="Language"
+          options={languageOptions}
+          value={language}
+          onChange={(value) => setLanguage(value as "tr" | "en")}
+        />
+      )}
+
+      {/* Generate Button - Neo-brutalism style */}
+      <Button
+        onClick={handleGenerate}
+        loading={loading}
+        className={cn(
+          "w-full shadow-brutal hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none",
+          "transition-all duration-150"
+        )}
+      >
+        {loading ? "Generating..." : "Generate with AI"}
+      </Button>
+
+      <p className="text-[10px] text-[#A3A3A3] text-center">
+        5 requests/min limit • Powered by Gemini 2.0 Flash
+      </p>
     </div>
   );
 }
